@@ -1,6 +1,7 @@
 add_subdirectory(LibraryMappingTools)
 add_subdirectory(ScintTimeTools)
 add_subdirectory(OpticalPathTools)
+add_subdirectory(OpticalPropagationTools)
 
 cet_make_library(LIBRARY_NAME PhotonLibraryInterface INTERFACE
   SOURCE IPhotonLibrary.h
@@ -145,6 +146,24 @@ cet_build_plugin(PhotonLibraryAnalyzer art::EDAnalyzer
   messagefacility::MF_MessageLogger
   fhiclcpp::fhiclcpp
   ROOT::Hist
+)
+
+cet_build_plugin(OpticalPropagation art::EDProducer
+    LIBRARIES PRIVATE
+    larsim::PhotonPropagation
+    larsim::IonizationScintillation
+    larcore::ServiceUtil
+    lardata::LArPropertiesService
+    lardataobj::Simulation
+    art::Framework_Principal
+    art::Framework_Services_Registry
+    art_plugin_support::toolMaker
+    messagefacility::MF_MessageLogger
+    fhiclcpp::types
+    fhiclcpp::fhiclcpp
+    cetlib_except::cetlib_except
+    # todo: link celeritas::larcel
+    # todo: link opticks::opticks
 )
 
 add_executable(test_fast_acos test_fast_acos.cc)
