@@ -1,0 +1,10 @@
+// PDFastSimPAR optical propagation tool
+
+BEGIN_PROLOG
+
+OpticalPropPDFastSimPAR:
+{
+    tool_type: OpticalPropPDFastSimPAR
+}
+
+END_PROLOG
