@@ -5,6 +5,7 @@ BEGIN_PROLOG
 OpticalPropPDFastSimPAR:
 {
     tool_type: OpticalPropPDFastSimPAR
+    // TODO: Move PDFastSimPAR_module fcl parameters here
 }
 
 END_PROLOG
