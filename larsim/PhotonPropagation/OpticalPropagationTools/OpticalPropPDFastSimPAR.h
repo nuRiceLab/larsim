@@ -7,6 +7,10 @@
 
 #include "IOpticalPropagation.h"
 
+#include "fhiclcpp/ParameterSet.h"
+#include "lardataobj/Simulation/OpDetBacktrackerRecord.h"
+#include "lardataobj/Simulation/SimEnergyDeposit.h"
+
 namespace phot {
   //-------------------------------------------------------------------------//
   /*!
@@ -15,7 +19,7 @@ namespace phot {
   class OpticalPropPDFastSimPAR : public IOpticalPropagation {
   public:
     // Construct with fcl parameters
-    OpticalPropPDFastSimPAR();
+    OpticalPropPDFastSimPAR(const fhicl::ParameterSet& p);
 
     // Default destructor
     ~OpticalPropPDFastSimPAR() = default;

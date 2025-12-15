@@ -8,7 +8,8 @@ namespace phot {
   /*!
    * Construct \c PDFastSimPAR tool with fcl parameters.
    */
-  OpticalPropPDFastSimPAR::OpticalPropPDFastSimPAR()
+  OpticalPropPDFastSimPAR::OpticalPropPDFastSimPAR(const fhicl::ParameterSet& p)
+    : IOpticalPropagation()
   {
     // todo
   }
