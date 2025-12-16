@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------------//
-// Job execution file for the OpticalPropagatation module
+// Job execution file for the OpticalPropagation module
 //---------------------------------------------------------------------------//
 # include "optical_propagation_config.fcl"
 
