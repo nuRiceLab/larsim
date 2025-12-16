@@ -31,32 +31,33 @@ namespace phot {
 
 class phot::OpticalPropagation : public art::EDProducer {
 public:
+  //! Construct with fcl parameters
   explicit OpticalPropagation(fhicl::ParameterSet const& p);
-  // The compiler-generated destructor is fine for non-base
-  // classes without bare pointers or other resource use.
 
-  // Plugins should not be copied or assigned.
+  //! Initialize optical simulation library
+  void beginJob() override;
+
+  //! Run full optical simulation
+  void produce(art::Event& e) override;
+
+  //! Tear down optical simulation library
+  void endJob() override;
+
+  //!@{
+  //! Disable class copy and move semantics
   OpticalPropagation(OpticalPropagation const&) = delete;
   OpticalPropagation(OpticalPropagation&&) = delete;
   OpticalPropagation& operator=(OpticalPropagation const&) = delete;
   OpticalPropagation& operator=(OpticalPropagation&&) = delete;
-
-  // Initialize optical simulation library
-  void beginJob() override;
-
-  // Run full optical simulation
-  void produce(art::Event& e) override;
-
-  // Tear down optical simulation library
-  void endJob() override;
+  //!@}
 
 private:
   std::unique_ptr<IOpticalPropagation> fOpticalPropagationTool;
 };
 
-//......................................................................
+//---------------------------------------------------------------------------//
 /*!
- * Construct with fhicl parameters: Initialize optical simulation tool.
+ * Construct with fhicl parameters.
  */
 phot::OpticalPropagation::OpticalPropagation(fhicl::ParameterSet const& p) : EDProducer{p}
 {
@@ -65,9 +66,9 @@ phot::OpticalPropagation::OpticalPropagation(fhicl::ParameterSet const& p) : EDP
   fOpticalPropagationTool = art::make_tool<IOpticalPropagation>(tool);
 }
 
-//......................................................................
+//---------------------------------------------------------------------------//
 /*!
- * Initialize optical simulation library object based on tool choice.
+ * Initialize optical simulation based on the tool choice.
  */
 void phot::OpticalPropagation::beginJob()
 {
@@ -75,9 +76,9 @@ void phot::OpticalPropagation::beginJob()
   fOpticalPropagationTool->beginJob();
 }
 
-//......................................................................
+//---------------------------------------------------------------------------//
 /*!
- * Produce \c sim::OpDetBacktrackerRecord objects and add to \c art::Event.
+ * Generate and add \c sim::OpDetBacktrackerRecord objects to \c art::Event .
  */
 void phot::OpticalPropagation::produce(art::Event& event)
 {
@@ -92,9 +93,9 @@ void phot::OpticalPropagation::produce(art::Event& event)
   event.put(std::move(result));
 }
 
-//......................................................................
+//---------------------------------------------------------------------------//
 /*!
- * Tear down simulation library.
+ * Tear down simulations.
  */
 void phot::OpticalPropagation::endJob()
 {
@@ -102,6 +103,6 @@ void phot::OpticalPropagation::endJob()
   fOpticalPropagationTool->endJob();
 }
 
-//......................................................................
+//---------------------------------------------------------------------------//
 //! Register module in the framework
 DEFINE_ART_MODULE(phot::OpticalPropagation)

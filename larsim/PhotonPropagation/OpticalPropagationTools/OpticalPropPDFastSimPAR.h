@@ -12,25 +12,27 @@
 #include "lardataobj/Simulation/SimEnergyDeposit.h"
 
 namespace phot {
-  //-------------------------------------------------------------------------//
-  /*!
-   * Implementation of the \c PDFastSimPAR optical simulation tool.
-   */
-  class OpticalPropPDFastSimPAR : public IOpticalPropagation {
-  public:
-    // Construct with fcl parameters
-    OpticalPropPDFastSimPAR(const fhicl::ParameterSet& p);
+  class OpticalPropPDFastSimPAR;
+}
 
-    // Default destructor
-    ~OpticalPropPDFastSimPAR() = default;
+//-------------------------------------------------------------------------//
+/*!
+ * Implementation of the \c PDFastSimPAR optical simulation tool.
+ */
+class phot::OpticalPropPDFastSimPAR : public phot::IOpticalPropagation {
+public:
+  // Construct with fcl parameters
+  OpticalPropPDFastSimPAR(const fhicl::ParameterSet& p);
 
-    // Initialize fast simulation
-    void beginJob() override;
+  // Default destructor
+  ~OpticalPropPDFastSimPAR() = default;
 
-    // Execute simulation on a single art::Event
-    UPVecBTR executeEvent(VecSED const& edeps) override;
+  // Initialize fast simulation
+  void beginJob() override;
 
-    // Finalize module execution
-    void endJob() override;
-  };
-} // namespace phot
+  // Execute simulation on a single art::Event
+  UPVecBTR executeEvent(VecSED const& edeps) override;
+
+  // Finalize execution
+  void endJob() override;
+};

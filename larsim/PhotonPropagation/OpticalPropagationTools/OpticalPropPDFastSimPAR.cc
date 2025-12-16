@@ -3,33 +3,43 @@
 //---------------------------------------------------------------------------//
 #include "OpticalPropPDFastSimPAR.h"
 
-namespace phot {
-  //-------------------------------------------------------------------------//
-  /*!
-   * Construct \c PDFastSimPAR tool with fcl parameters.
-   */
-  OpticalPropPDFastSimPAR::OpticalPropPDFastSimPAR(const fhicl::ParameterSet& p)
-    : IOpticalPropagation()
-  {
-    // todo
-  }
+#include "messagefacility/MessageLogger/MessageLogger.h"
 
-  // Initalize fast simulation
-  void OpticalPropPDFastSimPAR::beginJob()
-  {
-    // todo
-  }
+//-------------------------------------------------------------------------//
+/*!
+ * Construct \c PDFastSimPAR tool with fcl parameters.
+ */
+phot::OpticalPropPDFastSimPAR::OpticalPropPDFastSimPAR(const fhicl::ParameterSet& p)
+  : phot::IOpticalPropagation()
+{
+  mf::LogError("OpticalPropPDFastSimPAR") << "Not implemented";
+}
 
-  // Execute simulation
-  OpticalPropPDFastSimPAR::UPVecBTR OpticalPropPDFastSimPAR::executeEvent(VecSED const& edeps)
-  {
-    // todo
-    return {};
-  }
+//-------------------------------------------------------------------------//
+/*!
+ * Initalize fast simulation.
+ */
+void phot::OpticalPropPDFastSimPAR::beginJob()
+{
+  mf::LogError("OpticalPropPDFastSimPAR") << "Not implemented";
+}
 
-  // Finalize module
-  void OpticalPropPDFastSimPAR::endJob()
-  {
-    // todo
-  }
-} // namespace phot
+//-------------------------------------------------------------------------//
+/*!
+ * Apply fast simulation to a single \c art::Event .
+ */
+phot::OpticalPropPDFastSimPAR::UPVecBTR phot::OpticalPropPDFastSimPAR::executeEvent(
+  VecSED const& edeps)
+{
+  mf::LogError("OpticalPropPDFastSimPAR") << "Not implemented";
+  return {};
+}
+
+//-------------------------------------------------------------------------//
+/*!
+ * Finalize fast simulation.
+ */
+void phot::OpticalPropPDFastSimPAR::endJob()
+{
+  mf::LogError("OpticalPropPDFastSimPAR") << "Not implemented";
+}

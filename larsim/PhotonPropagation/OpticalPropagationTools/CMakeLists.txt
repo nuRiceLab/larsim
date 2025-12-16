@@ -17,6 +17,7 @@ cet_build_plugin(OpticalPropPDFastSimPAR phot::OpticalPropagationTools
   LIBRARIES PRIVATE
   lardataobj::Simulation
   fhiclcpp::fhiclcpp
+  messagefacility::MF_MessageLogger
 )
 
 install_headers()
