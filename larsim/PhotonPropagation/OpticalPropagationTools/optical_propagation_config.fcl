@@ -1,0 +1,16 @@
+//---------------------------------------------------------------------------//
+// OpticalPropagation_module tool selection
+//---------------------------------------------------------------------------//
+// Available tools are:
+// @local::OpticalPropPDFastSimPAR : Semi-analytical model
+// @local::Celeritas               : Optical photon propagation on CPU and GPU
+// @local::Opticks                 : Optical photon propagation on Nvidia GPUs
+
+BEGIN_PROLOG
+
+standard_opticalpropagation:
+{
+    OpticalPropagationTools: @local::OpticalPropPDFastSimPAR
+}
+
+END_PROLOG

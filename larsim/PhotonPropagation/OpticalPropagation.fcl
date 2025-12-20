@@ -1,0 +1,29 @@
+//---------------------------------------------------------------------------//
+// Job execution file for the OpticalPropagation module
+//---------------------------------------------------------------------------//
+# include "optical_propagation_config.fcl"
+
+#include "pdfastsimpar_tool.fcl"
+// TODO: include Celeritas and Opticks fcl tools
+
+process_name: OpticalPropagationProducer
+
+services:
+{
+    // Geometry with optical SDs correctly labeled
+    // Maybe we need gdmlFilename_ : "geo.gdml" ?
+    geometry: @local::dune10kt_1x2x6_optical
+
+    // Profiling tools for the execution
+    TimeTracker: {}
+    MemoryTracker: {}
+}
+
+// TODO: verify these parameters
+outputs:
+{
+    module_type:      RootOutput
+    fileName:         "output.root" // TODO Use %[flags] for automatic naming
+    dataTier:         "simulated"
+    compressionLevel: 1
+}
