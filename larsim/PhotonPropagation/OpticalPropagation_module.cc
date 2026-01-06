@@ -21,7 +21,8 @@
 #include "fhiclcpp/ParameterSet.h"
 #include "messagefacility/MessageLogger/MessageLogger.h"
 
-#include "OpticalPropagationTools/IOpticalPropagation.h"
+#include "OpticalPropagationTools/OpticalPropPDFastSimPAR.h"
+#include "OpticalPropagationTools/OpticalPropPDFastSimPARConfig.h"
 
 #include <memory>
 
@@ -31,8 +32,10 @@ namespace phot {
 
 class phot::OpticalPropagation : public art::EDProducer {
 public:
+  using Parameters = phot::OpticalPropPDFastSimParameters;
+
   //! Construct with fcl parameters
-  explicit OpticalPropagation(fhicl::ParameterSet const& p);
+  explicit OpticalPropagation(Parameters const& config);
 
   //! Initialize optical simulation library
   void beginJob() override;
@@ -52,18 +55,44 @@ public:
   //!@}
 
 private:
+  // Propagation tool
   std::unique_ptr<IOpticalPropagation> fOpticalPropagationTool;
+
+  // RNG Engines that cannot be initialized by the fastsim tool constructor
+  // Used by OpticalPropagationTools/OpticalPropPDFastSimPAR
+  CLHEP::HepRandomEngine& fPhotonEngine;
+  std::unique_ptr<CLHEP::RandPoissonQ> fRandPoissPhot;
+  CLHEP::HepRandomEngine& fScintTimeEngine;
 };
 
 //---------------------------------------------------------------------------//
 /*!
  * Construct with fhicl parameters.
  */
-phot::OpticalPropagation::OpticalPropagation(fhicl::ParameterSet const& p) : EDProducer{p}
+phot::OpticalPropagation::OpticalPropagation(Parameters const& config)
+  : EDProducer{config}
+  , fPhotonEngine(art::ServiceHandle<rndm::NuRandomService>()->registerAndSeedEngine(
+      createEngine(0, "HepJamesRandom", "photon"),
+      "HepJamesRandom",
+      "photon",
+      config.get_PSet(),
+      "SeedPhoton"))
+  , fRandPoissPhot(std::make_unique<CLHEP::RandPoissonQ>(fPhotonEngine))
+  , fScintTimeEngine(art::ServiceHandle<rndm::NuRandomService>()->registerAndSeedEngine(
+      createEngine(0, "HepJamesRandom", "scinttime"),
+      "HepJamesRandom",
+      "scinttime",
+      config.get_PSet(),
+      "SeedScintTime"))
 {
   // Initialize optical simulation library tool
-  fhicl::ParameterSet tool = p.get<fhicl::ParameterSet>("OpticalPropagationTool");
+  fhicl::ParameterSet tool = config().OpticalPropagationTool.get<fhicl::ParameterSet>();
   fOpticalPropagationTool = art::make_tool<IOpticalPropagation>(tool);
+
+  if (auto* fast_sim = dynamic_cast<OpticalPropPDFastSimPAR*>(fOpticalPropagationTool.get())) {
+    // Transfer ownership of RNG engines to the FastSim tool
+    fast_sim->TransferRngs(fPhotonEngine, fRandPoissPhot, fScintTimeEngine);
+  }
 }
 
 //---------------------------------------------------------------------------//

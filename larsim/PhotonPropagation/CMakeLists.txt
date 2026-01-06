@@ -150,11 +150,19 @@ cet_build_plugin(PhotonLibraryAnalyzer art::EDAnalyzer
 
 cet_build_plugin(OpticalPropagation art::EDProducer
     LIBRARIES PRIVATE
+    larsim::PhotonPropagation_PhotonVisibilityService_service
+    larsim::PhotonPropagation
+    larsim::Simulation_LArG4Parameters_service
+    lardata::LArPropertiesService
     lardataobj::Simulation
+    larcore::ServiceUtil
+    nurandom::RandomUtils_NuRandomService_service
     art::Framework_Principal
+    art::Framework_Services_Registry
     art_plugin_support::toolMaker
-    messagefacility::MF_MessageLogger
+    canvas::canvas
     fhiclcpp::fhiclcpp
+    CLHEP::Random
     # todo: link celeritas::larcel
     # todo: link opticks::opticks
 )

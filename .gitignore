@@ -1,3 +1,5 @@
+.clangd
+.vscode/
 *~
 .depend
 *Dict.cxx

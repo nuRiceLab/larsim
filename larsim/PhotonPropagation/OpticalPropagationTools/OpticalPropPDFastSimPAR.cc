@@ -9,19 +9,7 @@
  */
 phot::OpticalPropPDFastSimPAR::OpticalPropPDFastSimPAR(const Parameters& config)
   : phot::IOpticalPropagation()
-  , fPhotonEngine(art::ServiceHandle<rndm::NuRandomService>()->registerAndSeedEngine(
-      createEngine(0, "HepJamesRandom", "photon"),
-      "HepJamesRandom",
-      "photon",
-      config.get_PSet(),
-      "SeedPhoton"))
-  , fRandPoissPhot(std::make_unique<CLHEP::RandPoissonQ>(fPhotonEngine))
-  , fScintTimeEngine(art::ServiceHandle<rndm::NuRandomService>()->registerAndSeedEngine(
-      createEngine(0, "HepJamesRandom", "scinttime"),
-      "HepJamesRandom",
-      "scinttime",
-      config.get_PSet(),
-      "SeedScintTime"))
+  , fConfig(config)
   , fScintTime{art::make_tool<phot::ScintTime>(config().ScintTimeTool.get<fhicl::ParameterSet>())}
   , fOpticalPath{std::shared_ptr<phot::OpticalPath>(
       art::make_tool<phot::OpticalPath>(config().OpticalPathTool.get<fhicl::ParameterSet>()))}
@@ -46,12 +34,6 @@ phot::OpticalPropPDFastSimPAR::OpticalPropPDFastSimPAR(const Parameters& config)
   , fUseXeAbsorption(config().UseXeAbsorption())
 {
   mf::LogInfo("OpticalPropPDFastSimPAR") << "Constructing tool" << std::endl;
-
-  // Parameterized Simulation
-  fhicl::ParameterSet VUVHitsParams = config().VUVHits.get<fhicl::ParameterSet>();
-  fhicl::ParameterSet VUVTimingParams;
-  fhicl::ParameterSet VISHitsParams;
-  fhicl::ParameterSet VISTimingParams;
 
   // Validate configuration options
   if (fIncludePropTime &&
@@ -92,32 +74,15 @@ phot::OpticalPropPDFastSimPAR::OpticalPropPDFastSimPAR(const Parameters& config)
   }
 
   mf::LogDebug("OpticalPropPDFastSimPAR") << "Only generating edeps in the following TPCs:";
-  for (const auto& tpc : fRestrictedTPCs)
+  for (const auto& tpc : fRestrictedTPCs) {
     mf::LogDebug("OpticalPropPDFastSimPAR") << tpc;
+  }
 
-  // Initialise the Scintillation Time
-  fScintTime->initRand(fScintTimeEngine);
-
-  // photo-detector visibility model (semi-analytical model)
-  fVisibilityModel = std::make_unique<SemiAnalyticalModel>(VUVHitsParams,
-                                                           VISHitsParams,
-                                                           fOpticalPath,
-                                                           fDoReflectedLight,
-                                                           fIncludeAnodeReflections,
-                                                           fUseXeAbsorption);
-
-  // propagation time model
-  if (fIncludePropTime)
-    fPropTimeModel = std::make_unique<PropagationTimeModel>(
-      VUVTimingParams, VISTimingParams, fScintTimeEngine, fDoReflectedLight, fGeoPropTimeOnly);
-
-  {
+  mf::LogInfo("OpticalPropPDFastSimPAR")
+    << "PDFastSimPAR: active volume boundaries from " << fActiveVolumes.size() << " volumes:";
+  for (auto const& [iCryo, box] : ::ranges::views::enumerate(fActiveVolumes)) {
     mf::LogInfo("OpticalPropPDFastSimPAR")
-      << "PDFastSimPAR: active volume boundaries from " << fActiveVolumes.size() << " volumes:";
-    for (auto const& [iCryo, box] : ::ranges::views::enumerate(fActiveVolumes)) {
-      mf::LogInfo("OpticalPropPDFastSimPAR")
-        << "\n - C:" << iCryo << ": " << box.Min() << " -- " << box.Max() << " cm";
-    }
+      << "\n - C:" << iCryo << ": " << box.Min() << " -- " << box.Max() << " cm";
   }
 
   // determine drift distance
@@ -127,20 +92,61 @@ phot::OpticalPropPDFastSimPAR::OpticalPropPDFastSimPAR(const Parameters& config)
     fDriftDistance = fGeom.TPC(geo::TPCID{0, 1}).DriftDistance();
 
   mf::LogInfo("OpticalPropPDFastSimPAR")
-    << "Initialization finish.\n"
+    << "Initialized.\n"
     << "Simulate using semi-analytic model for number of hits." << std::endl;
 }
 
-//-------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
- * Initalize fast simulation.
+ * Transfer ownership of the random number generator engines from the
+ * EDProducer to this tool.
+ */
+template <class PhotonEngine, class PoissonEngine, class ScintEngine>
+void TransferRngs(PhotonEngine& photon_engine,
+                  std::unique_ptr<PoissonEngine> poisson,
+                  ScintEngine& scint_time);
+{
+  fPhotonEngine = photon_engine;
+  fRandPoissPhot = poisson;
+  fScintTimeEngine = scint_time;
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * Initialize all objects that *cannot* be created at construction time.
+ *
+ * These are objects that dependent on the RNG engines created by the Producer
+ * and had their ownership transferred to this tool via \c ::InitializeRng .
  */
 void phot::OpticalPropPDFastSimPAR::beginJob()
 {
-  mf::LogTrace("OpticalPropPDFastSimPAR") << "beginJob() called but not required";
+  mf::LogTrace("OpticalPropPDFastSimPAR") << "beginJob()";
+
+  // Parameterized Simulation
+  fhicl::ParameterSet VUVHitsParams = config().VUVHits.get<fhicl::ParameterSet>();
+  fhicl::ParameterSet VUVTimingParams;
+  fhicl::ParameterSet VISHitsParams;
+  fhicl::ParameterSet VISTimingParams;
+
+  // Initialise the Scintillation Time RNG engine
+  fScintTime->initRand(fScintTimeEngine);
+
+  // Construct semi-analytical photo-detector visibility model
+  fVisibilityModel = std::make_unique<SemiAnalyticalModel>(VUVHitsParams,
+                                                           VISHitsParams,
+                                                           fOpticalPath,
+                                                           fDoReflectedLight,
+                                                           fIncludeAnodeReflections,
+                                                           fUseXeAbsorption);
+
+  if (fIncludePropTime) {
+    // Construt propagation time model
+    fPropTimeModel = std::make_unique<PropagationTimeModel>(
+      VUVTimingParams, VISTimingParams, fScintTimeEngine, fDoReflectedLight, fGeoPropTimeOnly);
+  }
 }
 
-//-------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * Apply fast simulation to a single \c art::Event .
  *
