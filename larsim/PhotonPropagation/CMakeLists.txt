@@ -163,8 +163,6 @@ cet_build_plugin(OpticalPropagation art::EDProducer
     canvas::canvas
     fhiclcpp::fhiclcpp
     CLHEP::Random
-    # todo: link celeritas::larcel
-    # todo: link opticks::opticks
 )
 
 add_executable(test_fast_acos test_fast_acos.cc)

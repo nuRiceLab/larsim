@@ -23,7 +23,6 @@ cet_build_plugin(OpticalPropPDFastSimPAR phot::OpticalPropagationTools
   lardataobj::Simulation
   nurandom::RandomUtils_NuRandomService_service
   art::Framework_Principal
-  art::Framework_Services_Registry
   art_plugin_support::toolMaker
   canvas::canvas
   messagefacility::MF_MessageLogger

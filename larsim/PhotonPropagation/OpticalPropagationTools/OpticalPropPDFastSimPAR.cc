@@ -35,21 +35,23 @@ phot::OpticalPropPDFastSimPAR::OpticalPropPDFastSimPAR(const Parameters& config)
 {
   mf::LogInfo("OpticalPropPDFastSimPAR") << "Constructing tool" << std::endl;
 
+  fVUVHitsParams = config().VUVHits.get<fhicl::ParameterSet>();
+
   // Validate configuration options
   if (fIncludePropTime &&
-      !config().VUVTiming.get_if_present<fhicl::ParameterSet>(VUVTimingParams)) {
+      !config().VUVTiming.get_if_present<fhicl::ParameterSet>(fVUVTimingParams)) {
     throw art::Exception(art::errors::Configuration)
       << "Propagation time simulation requested, but VUVTiming not specified."
       << "\n";
   }
   if ((fDoReflectedLight || fIncludeAnodeReflections) &&
-      !config().VISHits.get_if_present<fhicl::ParameterSet>(VISHitsParams)) {
+      !config().VISHits.get_if_present<fhicl::ParameterSet>(fVISHitsParams)) {
     throw art::Exception(art::errors::Configuration)
       << "Reflected light or anode reflections simulation requested, but VisHits not specified."
       << "\n";
   }
   if (fDoReflectedLight && fIncludePropTime &&
-      !config().VISTiming.get_if_present<fhicl::ParameterSet>(VISTimingParams)) {
+      !config().VISTiming.get_if_present<fhicl::ParameterSet>(fVISTimingParams)) {
     throw art::Exception(art::errors::Configuration)
       << "Reflected light propagation time simulation requested, but VISTiming not specified."
       << "\n";
@@ -98,17 +100,32 @@ phot::OpticalPropPDFastSimPAR::OpticalPropPDFastSimPAR(const Parameters& config)
 
 //---------------------------------------------------------------------------//
 /*!
- * Transfer ownership of the random number generator engines from the
- * EDProducer to this tool.
+ * Initialize RNG engine and other tools. This separate initialization has to
+ * happen *after* this object's constructor is invoked.
  */
-template <class PhotonEngine, class PoissonEngine, class ScintEngine>
-void TransferRngs(PhotonEngine& photon_engine,
-                  std::unique_ptr<PoissonEngine> poisson,
-                  ScintEngine& scint_time);
+void phot::OpticalPropPDFastSimPAR::Initialize(CLHEP::HepRandomEngine& poisson,
+                                               CLHEP::HepRandomEngine& scint_time)
 {
-  fPhotonEngine = photon_engine;
-  fRandPoissPhot = poisson;
-  fScintTimeEngine = scint_time;
+  mf::LogTrace("OpticalPropPDFastSimPAR") << "Initialize scintillation and propagation time tools";
+
+  fRandPoissPhot = std::make_unique<CLHEP::RandPoissonQ>(poisson);
+
+  // Initialise the Scintillation Time RNG engine
+  fScintTime->initRand(scint_time);
+
+  // Construct semi-analytical photo-detector visibility model
+  fVisibilityModel = std::make_unique<SemiAnalyticalModel>(fVUVHitsParams,
+                                                           fVISHitsParams,
+                                                           fOpticalPath,
+                                                           fDoReflectedLight,
+                                                           fIncludeAnodeReflections,
+                                                           fUseXeAbsorption);
+
+  if (fIncludePropTime) {
+    // Construt propagation time model
+    fPropTimeModel = std::make_unique<PropagationTimeModel>(
+      fVUVTimingParams, fVISTimingParams, scint_time, fDoReflectedLight, fGeoPropTimeOnly);
+  }
 }
 
 //---------------------------------------------------------------------------//
@@ -121,29 +138,6 @@ void TransferRngs(PhotonEngine& photon_engine,
 void phot::OpticalPropPDFastSimPAR::beginJob()
 {
   mf::LogTrace("OpticalPropPDFastSimPAR") << "beginJob()";
-
-  // Parameterized Simulation
-  fhicl::ParameterSet VUVHitsParams = config().VUVHits.get<fhicl::ParameterSet>();
-  fhicl::ParameterSet VUVTimingParams;
-  fhicl::ParameterSet VISHitsParams;
-  fhicl::ParameterSet VISTimingParams;
-
-  // Initialise the Scintillation Time RNG engine
-  fScintTime->initRand(fScintTimeEngine);
-
-  // Construct semi-analytical photo-detector visibility model
-  fVisibilityModel = std::make_unique<SemiAnalyticalModel>(VUVHitsParams,
-                                                           VISHitsParams,
-                                                           fOpticalPath,
-                                                           fDoReflectedLight,
-                                                           fIncludeAnodeReflections,
-                                                           fUseXeAbsorption);
-
-  if (fIncludePropTime) {
-    // Construt propagation time model
-    fPropTimeModel = std::make_unique<PropagationTimeModel>(
-      VUVTimingParams, VISTimingParams, fScintTimeEngine, fDoReflectedLight, fGeoPropTimeOnly);
-  }
 }
 
 //---------------------------------------------------------------------------//
