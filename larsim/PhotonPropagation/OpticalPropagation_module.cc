@@ -65,24 +65,28 @@ private:
 phot::OpticalPropagation::OpticalPropagation(Parameters const& config) : EDProducer{config}
 {
   // Initialize optical simulation library tool
-  fhicl::ParameterSet tool = config().OpticalPropagationTool.get<fhicl::ParameterSet>();
-  fOpticalPropagationTool = art::make_tool<IOpticalPropagation>(tool);
+  /*
+   * TODO:
+   * make_tool requires a ParameterSet as a single argument or 2 arguments if a
+   * table. No idea what to place as std::string tool type.
+   */
+  fOpticalPropagationTool =
+    art::make_tool<phot::IOpticalPropagation>(config, "TODO: tool type name");
 
-  if (auto* fast_sim = dynamic_cast<OpticalPropPDFastSimPAR*>(fOpticalPropagationTool.get())) {
-
-    // Complete tool initialization after its construction
-    fast_sim->Initialize(art::ServiceHandle<rndm::NuRandomService>()->registerAndSeedEngine(
-                           createEngine(0, "HepJamesRandom", "photon"),
-                           "HepJamesRandom",
-                           "photon",
-                           config.get_PSet(),
-                           "SeedPhoton"),
-                         art::ServiceHandle<rndm::NuRandomService>()->registerAndSeedEngine(
-                           createEngine(0, "HepJamesRandom", "scinttime"),
-                           "HepJamesRandom",
-                           "scinttime",
-                           config.get_PSet(),
-                           "SeedScintTime"));
+  if (auto fast_sim = dynamic_cast<phot::OpticalPropPDFastSimPAR*>(fOpticalPropagationTool.get())) {
+    // Initialize required tools used by PDFastSimPAR
+    fast_sim->InitializeTools(art::ServiceHandle<rndm::NuRandomService>()->registerAndSeedEngine(
+                                createEngine(0, "HepJamesRandom", "photon"),
+                                "HepJamesRandom",
+                                "photon",
+                                config.get_PSet(),
+                                "SeedPhoton"),
+                              art::ServiceHandle<rndm::NuRandomService>()->registerAndSeedEngine(
+                                createEngine(0, "HepJamesRandom", "scinttime"),
+                                "HepJamesRandom",
+                                "scinttime",
+                                config.get_PSet(),
+                                "SeedScintTime"));
   }
 }
 

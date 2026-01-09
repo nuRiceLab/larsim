@@ -9,7 +9,6 @@
  */
 phot::OpticalPropPDFastSimPAR::OpticalPropPDFastSimPAR(const Parameters& config)
   : phot::IOpticalPropagation()
-  , fConfig(config)
   , fScintTime{art::make_tool<phot::ScintTime>(config().ScintTimeTool.get<fhicl::ParameterSet>())}
   , fOpticalPath{std::shared_ptr<phot::OpticalPath>(
       art::make_tool<phot::OpticalPath>(config().OpticalPathTool.get<fhicl::ParameterSet>()))}
@@ -103,8 +102,8 @@ phot::OpticalPropPDFastSimPAR::OpticalPropPDFastSimPAR(const Parameters& config)
  * Initialize RNG engine and other tools. This separate initialization has to
  * happen *after* this object's constructor is invoked.
  */
-void phot::OpticalPropPDFastSimPAR::Initialize(CLHEP::HepRandomEngine& poisson,
-                                               CLHEP::HepRandomEngine& scint_time)
+void phot::OpticalPropPDFastSimPAR::InitializeTools(CLHEP::HepRandomEngine& poisson,
+                                                    CLHEP::HepRandomEngine& scint_time)
 {
   mf::LogTrace("OpticalPropPDFastSimPAR") << "Initialize scintillation and propagation time tools";
 

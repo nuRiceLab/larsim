@@ -132,12 +132,13 @@ public:
   //!@}
 
   // Construct with fcl parameters
-  OpticalPropPDFastSimPAR(const Parameters& config,
-                          CLHEP::HepRandomEngine& poisson,
-                          CLHEP::HepRandomEngine& scint_time);
+  OpticalPropPDFastSimPAR(const Parameters& config);
 
   // Default destructor
   ~OpticalPropPDFastSimPAR() = default;
+
+  // Initialize internal tools (ScintTimeLar and PropagationTimeModel)
+  void InitializeTools(CLHEP::HepRandomEngine& poisson, CLHEP::HepRandomEngine& scint_time);
 
   // Initialize fast simulation
   void beginJob() override;
@@ -170,9 +171,6 @@ private:
   std::vector<geo::Point_t> opDetCenters() const;
 
 private:
-  // Store FHiCL parameters
-  Parameters fConfig;
-
   // semi-analytical model
   std::unique_ptr<SemiAnalyticalModel> fVisibilityModel;
 
