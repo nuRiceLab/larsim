@@ -463,8 +463,8 @@ void phot::OpticalPropPDFastSimPAR::endJob()
 // PRIVATE
 //---------------------------------------------------------------------------//
 /*!
-* \todo Add documentation.
-*/
+ * \todo Add documentation.
+ */
 void phot::OpticalPropPDFastSimPAR::AddOpDetBTR(std::vector<sim::OpDetBacktrackerRecord>& opbtr,
                                                 std::vector<int>& ChannelMap,
                                                 const sim::OpDetBacktrackerRecord& btr) const
@@ -489,8 +489,8 @@ void phot::OpticalPropPDFastSimPAR::AddOpDetBTR(std::vector<sim::OpDetBacktracke
 
 //---------------------------------------------------------------------------//
 /*!
-* \todo Add documentation.
-*/
+ * \todo Add documentation.
+ */
 void phot::OpticalPropPDFastSimPAR::
   SimpleAddOpDetBTR( //std::vector<sim::OpDetBacktrackerRecord>& opbtr,
     std::map<int, sim::OBTRHelper>& opbtr,
@@ -514,9 +514,9 @@ void phot::OpticalPropPDFastSimPAR::
 
 //---------------------------------------------------------------------------//
 /*!
-* Calculates number of photons detected given visibility and emitted number of
-* photons
-*/
+ * Calculates number of photons detected given visibility and emitted number of
+ * photons
+ */
 void phot::OpticalPropPDFastSimPAR::detectedNumPhotons(std::vector<int>& DetectedNumPhotons,
                                                        const std::vector<double>& OpDetVisibilities,
                                                        const int NumPhotons) const
@@ -528,8 +528,8 @@ void phot::OpticalPropPDFastSimPAR::detectedNumPhotons(std::vector<int>& Detecte
 
 //---------------------------------------------------------------------------//
 /*!
-* \todo Add documentation.
-*/
+ * \todo Add documentation.
+ */
 std::vector<geo::Point_t> phot::OpticalPropPDFastSimPAR::opDetCenters() const
 {
   std::vector<geo::Point_t> opDetCenter;

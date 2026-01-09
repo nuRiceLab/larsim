@@ -8,6 +8,7 @@ cet_write_plugin_builder(phot::OpticalPropagationTools art::tool Modules
   INSTALL_BUILDER
   LIBRARIES CONDITIONAL
   lardataobj::Simulation
+  larcore::ServiceUtil
 )
 
 include(phot::OpticalPropagationTools)

@@ -132,13 +132,12 @@ public:
   //!@}
 
   // Construct with fcl parameters
-  OpticalPropPDFastSimPAR(const Parameters& config);
+  OpticalPropPDFastSimPAR(const Parameters& config,
+                          CLHEP::HepRandomEngine& poisson,
+                          CLHEP::HepRandomEngine& scint_time);
 
   // Default destructor
   ~OpticalPropPDFastSimPAR() = default;
-
-  // Finalize tool initialization after its construction
-  void Initialize(CLHEP::HepRandomEngine& poisson, CLHEP::HepRandomEngine& scint_time);
 
   // Initialize fast simulation
   void beginJob() override;
