@@ -62,7 +62,7 @@ private:
 phot::OpticalPropagation::OpticalPropagation(fhicl::ParameterSet const& p) : EDProducer{p}
 {
   // Initialize optical simulation library tool
-  fhicl::ParameterSet tool = p.get<fhicl::ParameterSet>("OpticalPropagationTool");
+  fhicl::ParameterSet tool = p.get<fhicl::ParameterSet>("OpticalPropagationTools");
   fOpticalPropagationTool = art::make_tool<IOpticalPropagation>(tool);
 }
 

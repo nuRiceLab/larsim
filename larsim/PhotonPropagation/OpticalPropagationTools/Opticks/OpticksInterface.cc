@@ -94,7 +94,7 @@ namespace phot{
 	  //Event id needed here
       g4xc->reset(eventID);
 
-	
+
   }
 
   std::map<G4String, G4int> OpticksInterface::GetPhotonDetectors(){
