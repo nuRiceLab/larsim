@@ -1,3 +1,5 @@
+add_subdirectory(Opticks)
+
 cet_make_library(LIBRARY_NAME OpticalPropagationTools INTERFACE
   SOURCE IOpticalPropagation.h
   LIBRARIES INTERFACE
