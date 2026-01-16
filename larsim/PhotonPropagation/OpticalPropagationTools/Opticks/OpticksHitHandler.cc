@@ -21,8 +21,9 @@ namespace phot{
       //Collecting Opticks Photons
       SEvt* sev             = SEvt::Get_EGPU();
       sphoton::Get(sphotons, sev->getHit());
-      auto run= G4RunManager::GetRunManager();
-      G4int eventID=run->GetCurrentEvent()->GetEventID();
+      //auto run= G4RunManager::GetRunManager();
+      //G4int eventID=run->GetCurrentEvent()->GetEventID();
+      G4int eventID=0;
 
       for (auto & hit : sphotons){
           OpticksHit ohit= OpticksHit();

@@ -20,7 +20,11 @@
 
 namespace phot{
 
-    OpticksInterface::OpticksInterface(fhicl::ParameterSet const& pset){
+    OpticksInterface::OpticksInterface(fhicl::ParameterSet const& pset) : IOpticalPropagation()
+ 																		  ,GDMLPath(pset.get<std::string>("GDMLPath"))
+ 																		  ,OpticksSensorIdentifier(nullptr)
+ 																		  ,OpticksHits(nullptr)
+{
       mf::LogInfo("OpticksInterface::init") << "Initializing OpticksInterface";
 	}
 
@@ -31,18 +35,20 @@ namespace phot{
 
       mf::LogInfo("OpticksInterface::init") << "Initializing OpticksInterface";
       // Initialize
-      OpticksSensorIdentifier = new MySensorIdentifier(DetectorIds);
+      DetectorIds = GetPhotonDetectors();
+	  OpticksSensorIdentifier = new MySensorIdentifier(DetectorIds);
       OpticksHits = OpticksHitHandler::getInstance();
 
+
       // Set Geometry
-      //G4CXOpticks::SetSensorIdentifier(OpticksSensorIdentifier);
-      //G4CXOpticks::SetGeometry(GDMLPath);
+      G4CXOpticks::SetSensorIdentifier(OpticksSensorIdentifier);
+      G4CXOpticks::SetGeometryFromGDML();
+
   }
 
 
-
-
-       void OpticksInterface::CollectPhotons(){
+  // Adjust this function
+  void OpticksInterface::CollectPhotons(){
 
       mf::LogInfo("OpticksInterface::CollectPhotons") << "Collecting Photons";
 /*
@@ -51,9 +57,6 @@ namespace phot{
 
       int CollectedPhotons=SEvt::GetNumPhotonCollected(0);
       int maxPhoton=SEventConfig::MaxPhoton();
-
-      auto run= G4RunManager::GetRunManager();
-      G4int eventID=run->GetCurrentEvent()->GetEventID();
 
       if(CollectedPhotons>=(maxPhoton*0.97)){
 
@@ -77,21 +80,24 @@ namespace phot{
   void OpticksInterface::Simulate(){
 
       mf::LogInfo("OpticksInterface::Simulate") << "Initiation GPU Simulation";
- /*
+
       G4CXOpticks * g4xc=G4CXOpticks::Get();
-      g4xc->simulate(eventID,0);
+      //Event id needed in here
+	  int eventID=0;
+	  g4xc->simulate(eventID,0);
 
       cudaDeviceSynchronize();
 
       if(SEvt::GetNumHit(0)>0){
-          OpticksHitHandler->CollectHits();
+          OpticksHits->CollectHits();
       }
+	  //Event id needed here
       g4xc->reset(eventID);
-*/
 
+	
   }
 
-  void OpticksInterface::GetPhotonDetectors(){
+  std::map<G4String, G4int> OpticksInterface::GetPhotonDetectors(){
     mf::LogInfo("OpticksInterface::GetPhotonDetectors") << "Getting PhotonDetectors From GDML";
 /*
     // Get the handle to the Auxiliary Geometry Service
@@ -120,6 +126,14 @@ namespace phot{
         // ... access sensitive volume info
       }
     }*/
+	// place holder. will get these from the gdml files
+	std::map<G4String, G4int> Ids = {
+    	{"det1", 0},
+    	{"det2", 1},
+    	{"det3", 2},
+    	{"det4", 3}
+	};
+	return Ids;
  }
 
 

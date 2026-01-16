@@ -1,10 +1,11 @@
-add_subdirectory(Opticks)
+
 
 cet_make_library(LIBRARY_NAME OpticalPropagationTools INTERFACE
   SOURCE IOpticalPropagation.h
   LIBRARIES INTERFACE
   lardataobj::Simulation
 )
+
 
 cet_write_plugin_builder(phot::OpticalPropagationTools art::tool Modules
   INSTALL_BUILDER
@@ -21,6 +22,8 @@ cet_build_plugin(OpticalPropPDFastSimPAR phot::OpticalPropagationTools
   fhiclcpp::fhiclcpp
   messagefacility::MF_MessageLogger
 )
+
+add_subdirectory(Opticks)
 
 install_headers()
 install_fhicl()

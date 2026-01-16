@@ -42,7 +42,7 @@ class OpticksHitHandler;
       void CollectPhotons();
       void GetHitsFromGPU();
       void Simulate();
-      void GetPhotonDetectors();
+      std::map<G4String, G4int> GetPhotonDetectors();
 
 	  // Initialize fast simulation
 	  void beginJob() override;
@@ -57,7 +57,7 @@ class OpticksHitHandler;
       std::string GDMLPath;
       MySensorIdentifier * OpticksSensorIdentifier;
       OpticksHitHandler* OpticksHits;
-      std::map<G4String, G4int> DetectorIds;
+      std::map<G4String, G4int>  DetectorIds;
   };
 }
 
