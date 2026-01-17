@@ -13,6 +13,9 @@
 // Generated at Tue Dec  9 09:10:34 2025 by Stefano Tognini using cetskelgen
 // from cetlib version 3.18.02.
 ////////////////////////////////////////////////////////////////////////
+// interface file
+#include "larsim/PhotonPropagation/OpticalPropagationTools/IOpticalPropagation.h"
+#include "nurandom/RandomUtils/NuRandomService.h"
 
 #include "art/Framework/Core/EDProducer.h"
 #include "art/Framework/Principal/Event.h"
@@ -20,9 +23,6 @@
 #include "art/Utilities/make_tool.h"
 #include "fhiclcpp/ParameterSet.h"
 #include "messagefacility/MessageLogger/MessageLogger.h"
-
-#include "OpticalPropagationTools/OpticalPropPDFastSimPAR.h"
-
 #include <memory>
 
 namespace phot {
@@ -31,8 +31,14 @@ namespace phot {
 
 class phot::OpticalPropagation : public art::EDProducer {
 public:
-  using Parameters = phot::OpticalPropPDFastSimPAR::Parameters;
 
+  struct Config {
+    fhicl::Table<fhicl::ParameterSet> OpticalPropagationTools{
+      fhicl::Name("OpticalPropagationTools")
+    };
+  };
+
+  using Parameters = art::EDProducer::Table<Config>;
   //! Construct with fcl parameters
   explicit OpticalPropagation(Parameters const& config);
 
@@ -70,12 +76,11 @@ phot::OpticalPropagation::OpticalPropagation(Parameters const& config) : EDProdu
    * make_tool requires a ParameterSet as a single argument or 2 arguments if a
    * table. No idea what to place as std::string tool type.
    */
-  fOpticalPropagationTool =
-    art::make_tool<phot::IOpticalPropagation>(config, "TODO: tool type name");
+     auto const & ps = config().OpticalPropagationTools();
+     fOpticalPropagationTool = std::unique_ptr<phot::IOpticalPropagation>(art::make_tool<phot::IOpticalPropagation>(ps));
 
-  if (auto fast_sim = dynamic_cast<phot::OpticalPropPDFastSimPAR*>(fOpticalPropagationTool.get())) {
-    // Initialize required tools used by PDFastSimPAR
-    fast_sim->InitializeTools(art::ServiceHandle<rndm::NuRandomService>()->registerAndSeedEngine(
+     // Initialize  Art Services
+     fOpticalPropagationTool->InitializeTools(art::ServiceHandle<rndm::NuRandomService>()->registerAndSeedEngine(
                                 createEngine(0, "HepJamesRandom", "photon"),
                                 "HepJamesRandom",
                                 "photon",
@@ -87,8 +92,8 @@ phot::OpticalPropagation::OpticalPropagation(Parameters const& config) : EDProdu
                                 "scinttime",
                                 config.get_PSet(),
                                 "SeedScintTime"));
-  }
-}
+   }
+
 
 //---------------------------------------------------------------------------//
 /*!

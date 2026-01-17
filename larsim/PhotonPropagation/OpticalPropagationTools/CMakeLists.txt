@@ -9,6 +9,8 @@ cet_write_plugin_builder(phot::OpticalPropagationTools art::tool Modules
   LIBRARIES CONDITIONAL
   lardataobj::Simulation
   larcore::ServiceUtil
+  larcorealg::Geometry
+  nurandom::RandomUtils_NuRandomService_service
 )
 
 include(phot::OpticalPropagationTools)

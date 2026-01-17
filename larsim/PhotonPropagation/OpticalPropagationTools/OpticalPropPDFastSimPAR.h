@@ -138,7 +138,7 @@ public:
   ~OpticalPropPDFastSimPAR() = default;
 
   // Initialize internal tools (ScintTimeLar and PropagationTimeModel)
-  void InitializeTools(CLHEP::HepRandomEngine& poisson, CLHEP::HepRandomEngine& scint_time);
+  void InitializeTools(CLHEP::HepRandomEngine& poisson, CLHEP::HepRandomEngine& scint_time) override;
 
   // Initialize fast simulation
   void beginJob() override;

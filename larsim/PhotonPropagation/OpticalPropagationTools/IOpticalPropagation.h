@@ -10,6 +10,7 @@
 
 #include "lardataobj/Simulation/OpDetBacktrackerRecord.h"
 #include "lardataobj/Simulation/SimEnergyDeposit.h"
+#include "CLHEP/Random/RandPoissonQ.h"
 
 namespace phot {
   class IOpticalPropagation;
@@ -50,4 +51,6 @@ public:
 
   // Bring tool back to invalid state
   virtual void endJob() = 0;
+
+  virtual void InitializeTools(CLHEP::HepRandomEngine& poisson, CLHEP::HepRandomEngine& scint_time)=0;
 };
