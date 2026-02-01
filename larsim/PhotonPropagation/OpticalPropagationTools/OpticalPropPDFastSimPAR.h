@@ -132,13 +132,10 @@ public:
   //!@}
 
   // Construct with fcl parameters
-  OpticalPropPDFastSimPAR(const Parameters& config);
+  OpticalPropPDFastSimPAR(Parameters const& config);
 
   // Default destructor
   ~OpticalPropPDFastSimPAR() = default;
-
-  // Initialize internal tools (ScintTimeLar and PropagationTimeModel)
-  void InitializeTools(CLHEP::HepRandomEngine& poisson, CLHEP::HepRandomEngine& scint_time);
 
   // Initialize fast simulation
   void beginJob() override;
@@ -148,6 +145,10 @@ public:
 
   // Finalize execution
   void endJob() override;
+
+  // Initialize internal tools (ScintTimeLar and PropagationTimeModel)
+  void InitializeTools(CLHEP::HepRandomEngine& poisson,
+                       CLHEP::HepRandomEngine& scint_time) override;
 
 private:
   void detectedNumPhotons(std::vector<int>& DetectedNumPhotons,

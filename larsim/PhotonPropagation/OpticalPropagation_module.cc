@@ -21,8 +21,8 @@
 #include "fhiclcpp/ParameterSet.h"
 #include "messagefacility/MessageLogger/MessageLogger.h"
 
-#include "OpticalPropagationTools/OpticalPropPDFastSimPAR.h"
-
+#include "larsim/PhotonPropagation/OpticalPropagationTools/IOpticalPropagation.h"
+#include "nurandom/RandomUtils/NuRandomService.h"
 #include <memory>
 
 namespace phot {
@@ -31,7 +31,16 @@ namespace phot {
 
 class phot::OpticalPropagation : public art::EDProducer {
 public:
-  using Parameters = phot::OpticalPropPDFastSimPAR::Parameters;
+  //! FHiCL configuration parameter
+  struct Config {
+    fhicl::Table<fhicl::ParameterSet> OpticalPropagationTools{
+      fhicl::Name("OpticalPropagationTools")};
+  };
+
+  //!@{
+  //! \name Type aliases
+  using Parameters = art::EDProducer::Table<Config>;
+  //!@}
 
   //! Construct with fcl parameters
   explicit OpticalPropagation(Parameters const& config);
@@ -64,30 +73,24 @@ private:
  */
 phot::OpticalPropagation::OpticalPropagation(Parameters const& config) : EDProducer{config}
 {
-  // Initialize optical simulation library tool
-  /*
-   * TODO:
-   * make_tool requires a ParameterSet as a single argument or 2 arguments if a
-   * table. No idea what to place as std::string tool type.
-   */
-  fOpticalPropagationTool =
-    art::make_tool<phot::IOpticalPropagation>(config, "TODO: tool type name");
+  using IOP = phot::IOpticalPropagation;
 
-  if (auto fast_sim = dynamic_cast<phot::OpticalPropPDFastSimPAR*>(fOpticalPropagationTool.get())) {
-    // Initialize required tools used by PDFastSimPAR
-    fast_sim->InitializeTools(art::ServiceHandle<rndm::NuRandomService>()->registerAndSeedEngine(
-                                createEngine(0, "HepJamesRandom", "photon"),
-                                "HepJamesRandom",
-                                "photon",
-                                config.get_PSet(),
-                                "SeedPhoton"),
-                              art::ServiceHandle<rndm::NuRandomService>()->registerAndSeedEngine(
-                                createEngine(0, "HepJamesRandom", "scinttime"),
-                                "HepJamesRandom",
-                                "scinttime",
-                                config.get_PSet(),
-                                "SeedScintTime"));
-  }
+  fOpticalPropagationTool =
+    std::unique_ptr<IOP>(art::make_tool<IOP>(config().OpticalPropagationTools()));
+
+  fOpticalPropagationTool->InitializeTools(
+    art::ServiceHandle<rndm::NuRandomService>()->registerAndSeedEngine(
+      createEngine(0, "HepJamesRandom", "photon"),
+      "HepJamesRandom",
+      "photon",
+      config.get_PSet(),
+      "SeedPhoton"),
+    art::ServiceHandle<rndm::NuRandomService>()->registerAndSeedEngine(
+      createEngine(0, "HepJamesRandom", "scinttime"),
+      "HepJamesRandom",
+      "scinttime",
+      config.get_PSet(),
+      "SeedScintTime"));
 }
 
 //---------------------------------------------------------------------------//
