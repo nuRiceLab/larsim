@@ -79,7 +79,7 @@ phot::OpticalPropagation::OpticalPropagation(Parameters const& config) : EDProdu
    * make_tool requires a ParameterSet as a single argument or 2 arguments if a
    * table. No idea what to place as std::string tool type.
    */
-     auto const & ps = config().OpticalPropagationToolsls.get<fhicl::ParameterSet>();
+     auto const & ps = config().OpticalPropagationTools.get<fhicl::ParameterSet>();
      fOpticalPropagationTool = std::unique_ptr<phot::IOpticalPropagation>(art::make_tool<phot::IOpticalPropagation>(ps));
 
      // Initialize  Art Services
