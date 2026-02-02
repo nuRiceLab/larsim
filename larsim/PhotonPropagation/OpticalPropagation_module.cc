@@ -11,6 +11,7 @@
 // - Celeritas: Full Monte Carlo photon propagation on CPU or GPU
 //
 // Generated at Tue Dec  9 09:10:34 2025 by Stefano Tognini using cetskelgen
+// Modified on Feb 2 2026 by Ilker Parmaksiz
 // from cetlib version 3.18.02.
 ////////////////////////////////////////////////////////////////////////
 // interface file
@@ -22,6 +23,8 @@
 #include "art/Framework/Principal/Handle.h"
 #include "art/Utilities/make_tool.h"
 #include "fhiclcpp/ParameterSet.h"
+#include "fhiclcpp/types/DelegatedParameter.h"
+
 #include "messagefacility/MessageLogger/MessageLogger.h"
 #include <memory>
 
@@ -32,11 +35,11 @@ namespace phot {
 class phot::OpticalPropagation : public art::EDProducer {
 public:
 
-  struct Config {
-    fhicl::Table<fhicl::ParameterSet> OpticalPropagationTools{
-      fhicl::Name("OpticalPropagationTools")
+    struct Config {
+        fhicl::DelegatedParameter OpticalPropagationTools{
+                fhicl::Name("OpticalPropagationTools"),
+                fhicl::Comment("Tool configuration block with tool_type and parameters") };
     };
-  };
 
   using Parameters = art::EDProducer::Table<Config>;
   //! Construct with fcl parameters
@@ -76,7 +79,7 @@ phot::OpticalPropagation::OpticalPropagation(Parameters const& config) : EDProdu
    * make_tool requires a ParameterSet as a single argument or 2 arguments if a
    * table. No idea what to place as std::string tool type.
    */
-     auto const & ps = config().OpticalPropagationTools();
+     auto const & ps = config().OpticalPropagationToolsls.get<fhicl::ParameterSet>();
      fOpticalPropagationTool = std::unique_ptr<phot::IOpticalPropagation>(art::make_tool<phot::IOpticalPropagation>(ps));
 
      // Initialize  Art Services
