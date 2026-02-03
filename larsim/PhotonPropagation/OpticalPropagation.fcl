@@ -2,7 +2,6 @@
 // Job execution file for the OpticalPropagation module
 //---------------------------------------------------------------------------//
 #include "OpticalPropPDFastSimPAR_tool.fcl"
-// TODO: #include "celeritas_tool.fcl"
 
 process_name: OpticalPropagationProducer
 
@@ -25,7 +24,4 @@ physics:
             OpticalPropagationTool: @local::OpticalPropPDFastSimPAR
         }
     }
-
-    // Do I need a path?
-    // simulate: [ OpticalPropagation ]
 }

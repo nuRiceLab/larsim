@@ -6,26 +6,27 @@ BEGIN_PROLOG
 
 standard_pdfastsim_par_ar:
 {
-  module_type:           "PDFastSimPAR"
-  SimulationLabel:       "IonAndScint"
-  DoFastComponent:       true
-  DoSlowComponent:       true
-  DoReflectedLight:      false
+  module_type:             "PDFastSimPAR"
+  SimulationLabel:         "IonAndScint"
+  DoFastComponent:         true
+  DoSlowComponent:         true
+  DoReflectedLight:        false
   IncludeAnodeReflections: false
-  IncludePropTime:       true
-  GeoPropTimeOnly:       false
-  UseLitePhotons:        true
-  OpaqueCathode:         true
-  OnlyActiveVolume:     true
-  OnlyOneCryostat:       false
-  ScintTimeTool:         @local::ScintTimeLAr
-  OpticalPathTool:       @local::StandardOpticalPath
-  UseXeAbsorption:       false
-
+  IncludePropTime:         true
+  GeoPropTimeOnly:         false
+  UseLitePhotons:          true
+  OpaqueCathode:           true
+  OnlyActiveVolume:        true
+  OnlyOneCryostat:         false
+  ScintTimeTool:           @local::ScintTimeLAr
+  OpticalPathTool:         @local::StandardOpticalPath
+  UseXeAbsorption:         false
   VUVTiming: @local::common_vuv_timing_parameterization
-  #VISTiming: 
-  #VUVHits:    # This is detector-specific, and without a real configuration this module won't work
-  #VISHits:   
+
+  // Required detector-specific parameters
+  VISTiming:
+  VUVHits:
+  VISHits:
 }
 
 

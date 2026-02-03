@@ -25,9 +25,11 @@ OpticalPropPDFastSimPAR:
     OpticalPathTool:         @local::StandardOpticalPath
     UseXeAbsorption:         false
     VUVTiming:               @local::common_vuv_timing_parameterization
-    #VISTiming:
-    #VUVHits: Detector-specific; requires configuration for module to work
-    #VISHits:
+
+    // Required detector-specific parameters:
+    VISTiming:
+    VUVHits:
+    VISHits:
 }
 
 END_PROLOG
