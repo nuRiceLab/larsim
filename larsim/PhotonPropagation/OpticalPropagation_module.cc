@@ -21,8 +21,8 @@
 #include "fhiclcpp/ParameterSet.h"
 #include "messagefacility/MessageLogger/MessageLogger.h"
 
-#include "OpticalPropagationTools/IOpticalPropagation.h"
-
+#include "larsim/PhotonPropagation/OpticalPropagationTools/IOpticalPropagation.h"
+#include "nurandom/RandomUtils/NuRandomService.h"
 #include <memory>
 
 namespace phot {
@@ -31,8 +31,19 @@ namespace phot {
 
 class phot::OpticalPropagation : public art::EDProducer {
 public:
+  //! FHiCL configuration parameter
+  struct Config {
+    fhicl::Table<fhicl::ParameterSet> OpticalPropagationTools{
+      fhicl::Name("OpticalPropagationTools")};
+  };
+
+  //!@{
+  //! \name Type aliases
+  using Parameters = art::EDProducer::Table<Config>;
+  //!@}
+
   //! Construct with fcl parameters
-  explicit OpticalPropagation(fhicl::ParameterSet const& p);
+  explicit OpticalPropagation(Parameters const& config);
 
   //! Initialize optical simulation library
   void beginJob() override;
@@ -52,6 +63,7 @@ public:
   //!@}
 
 private:
+  // Propagation tool
   std::unique_ptr<IOpticalPropagation> fOpticalPropagationTool;
 };
 
@@ -59,11 +71,26 @@ private:
 /*!
  * Construct with fhicl parameters.
  */
-phot::OpticalPropagation::OpticalPropagation(fhicl::ParameterSet const& p) : EDProducer{p}
+phot::OpticalPropagation::OpticalPropagation(Parameters const& config) : EDProducer{config}
 {
-  // Initialize optical simulation library tool
-  fhicl::ParameterSet tool = p.get<fhicl::ParameterSet>("OpticalPropagationTool");
-  fOpticalPropagationTool = art::make_tool<IOpticalPropagation>(tool);
+  using IOP = phot::IOpticalPropagation;
+
+  fOpticalPropagationTool =
+    std::unique_ptr<IOP>(art::make_tool<IOP>(config().OpticalPropagationTools()));
+
+  fOpticalPropagationTool->InitializeTools(
+    art::ServiceHandle<rndm::NuRandomService>()->registerAndSeedEngine(
+      createEngine(0, "HepJamesRandom", "photon"),
+      "HepJamesRandom",
+      "photon",
+      config.get_PSet(),
+      "SeedPhoton"),
+    art::ServiceHandle<rndm::NuRandomService>()->registerAndSeedEngine(
+      createEngine(0, "HepJamesRandom", "scinttime"),
+      "HepJamesRandom",
+      "scinttime",
+      config.get_PSet(),
+      "SeedScintTime"));
 }
 
 //---------------------------------------------------------------------------//

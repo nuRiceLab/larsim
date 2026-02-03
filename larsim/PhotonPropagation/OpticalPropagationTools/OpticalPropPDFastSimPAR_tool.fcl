@@ -1,0 +1,35 @@
+//---------------------------------------------------------------------------//
+// OpticalPropPDFastSimPAR tool parameters
+//---------------------------------------------------------------------------//
+#include "opticalsimparameterisations.fcl"
+#include "scintillationtime_tool.fcl"
+#include "opticalpath_tool.fcl"
+
+BEGIN_PROLOG
+
+OpticalPropPDFastSimPAR:
+{
+    tool_type:               OpticalPropPDFastSimPAR
+    SimulationLabel:         "IonAndScint"
+    DoFastComponent:         true
+    DoSlowComponent:         true
+    DoReflectedLight:        false
+    IncludeAnodeReflections: false
+    IncludePropTime:         true
+    GeoPropTimeOnly:         false
+    UseLitePhotons:          true
+    OpaqueCathode:           true
+    OnlyActiveVolume:        true
+    OnlyOneCryostat:         false
+    ScintTimeTool:           @local::ScintTimeLAr
+    OpticalPathTool:         @local::StandardOpticalPath
+    UseXeAbsorption:         false
+    VUVTiming:               @local::common_vuv_timing_parameterization
+
+    // Required detector-specific parameters:
+    VISTiming:
+    VUVHits:
+    VISHits:
+}
+
+END_PROLOG
