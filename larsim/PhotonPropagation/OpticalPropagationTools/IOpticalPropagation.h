@@ -7,9 +7,11 @@
 
 #include <memory>
 #include <vector>
+#include <map>
 
 #include "lardataobj/Simulation/OpDetBacktrackerRecord.h"
 #include "lardataobj/Simulation/SimEnergyDeposit.h"
+#include "nusimdata/SimulationBase/MCParticle.h"
 #include "CLHEP/Random/RandPoissonQ.h"
 
 namespace phot {
@@ -51,6 +53,9 @@ public:
 
   // Bring tool back to invalid state
   virtual void endJob() = 0;
-
+  // Needed for OpticalPropPDFastSimPAR
   virtual void InitializeTools(CLHEP::HepRandomEngine& poisson, CLHEP::HepRandomEngine& scint_time)=0;
+
+  // MCParticle list to extract momentum and energy of the primaries and secondaries
+  virtual void SetParticleList(std::vector<simb::MCParticle> const * plist) = 0;
 };

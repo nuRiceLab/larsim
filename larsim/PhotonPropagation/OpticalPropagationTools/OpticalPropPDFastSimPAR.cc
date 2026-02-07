@@ -538,3 +538,9 @@ std::vector<geo::Point_t> phot::OpticalPropPDFastSimPAR::opDetCenters() const
   }
   return opDetCenter;
 }
+
+// Do nothing for PDFastSimPAr.cc
+// This is mainly for opticks
+void phot::OpticalPropPDFastSimPAR::SetParticleList(std::vector<simb::MCParticle> const * plist){
+
+}

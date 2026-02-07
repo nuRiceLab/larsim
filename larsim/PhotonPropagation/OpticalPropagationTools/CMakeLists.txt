@@ -2,6 +2,7 @@ cet_make_library(LIBRARY_NAME OpticalPropagationTools INTERFACE
   SOURCE IOpticalPropagation.h
   LIBRARIES INTERFACE
   lardataobj::Simulation
+  nusimdata::SimulationBase
 )
 
 cet_write_plugin_builder(phot::OpticalPropagationTools art::tool Modules
@@ -11,6 +12,8 @@ cet_write_plugin_builder(phot::OpticalPropagationTools art::tool Modules
   larcore::ServiceUtil
   larcorealg::Geometry
   nurandom::RandomUtils_NuRandomService_service
+  nusimdata::SimulationBase
+
 )
 
 include(phot::OpticalPropagationTools)
@@ -33,6 +36,7 @@ cet_build_plugin(OpticalPropPDFastSimPAR phot::OpticalPropagationTools
   fhiclcpp::fhiclcpp
   cetlib_except::cetlib_except
   CLHEP::Random
+  nusimdata::SimulationBase
 )
 
 install_headers()

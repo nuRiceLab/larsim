@@ -42,6 +42,8 @@
 #include "fhiclcpp/types/OptionalDelegatedParameter.h"
 #include "fhiclcpp/types/Sequence.h"
 #include "messagefacility/MessageLogger/MessageLogger.h"
+#include "nusimdata/SimulationBase/MCParticle.h"
+
 
 // Random numbers
 #include "CLHEP/Random/RandPoissonQ.h"
@@ -169,6 +171,7 @@ private:
     int num_photons = 1);
 
   std::vector<geo::Point_t> opDetCenters() const;
+  void SetParticleList (std::vector<simb::MCParticle> const * plist) override;
 
 private:
   // semi-analytical model

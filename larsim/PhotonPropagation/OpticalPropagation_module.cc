@@ -24,8 +24,8 @@
 #include "art/Utilities/make_tool.h"
 #include "fhiclcpp/ParameterSet.h"
 #include "fhiclcpp/types/DelegatedParameter.h"
-
 #include "messagefacility/MessageLogger/MessageLogger.h"
+
 #include <memory>
 
 namespace phot {
@@ -95,7 +95,12 @@ phot::OpticalPropagation::OpticalPropagation(Parameters const& config) : EDProdu
                                 "scinttime",
                                 config.get_PSet(),
                                 "SeedScintTime"));
+
+
+
    }
+
+
 
 
 //---------------------------------------------------------------------------//
@@ -119,6 +124,8 @@ void phot::OpticalPropagation::produce(art::Event& event)
     mf::LogError("OpticalPropagation") << "Missing IonAndScint label in art::Event";
     return;
   }
+  auto mcHandle = event.getValidHandle<std::vector<simb::MCParticle>>("largeant");
+  fOpticalPropagationTool->SetParticleList(  mcHandle);
 
   // Execute optical simulation and add result to event
   auto result = fOpticalPropagationTool->executeEvent(*(edepHandle.product()));

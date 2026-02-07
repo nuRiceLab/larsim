@@ -163,6 +163,7 @@ cet_build_plugin(OpticalPropagation art::EDProducer
     canvas::canvas
     fhiclcpp::fhiclcpp
     CLHEP::Random
+    nusimdata::SimulationBase
 )
 
 add_executable(test_fast_acos test_fast_acos.cc)
