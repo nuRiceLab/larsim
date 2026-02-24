@@ -19,6 +19,7 @@
 #include "art/Framework/Principal/Handle.h"
 #include "art/Utilities/make_tool.h"
 #include "fhiclcpp/ParameterSet.h"
+#include "fhiclcpp/types/DelegatedParameter.h"
 #include "messagefacility/MessageLogger/MessageLogger.h"
 
 #include "larsim/PhotonPropagation/OpticalPropagationTools/IOpticalPropagation.h"
@@ -33,8 +34,9 @@ class phot::OpticalPropagation : public art::EDProducer {
 public:
   //! FHiCL configuration parameter
   struct Config {
-    fhicl::Table<fhicl::ParameterSet> OpticalPropagationTools{
-      fhicl::Name("OpticalPropagationTools")};
+    fhicl::DelegatedParameter OpticalPropagationTool{
+      fhicl::Name("OpticalPropagationTool"),
+      fhicl::Comment("Tool configuration block with tool_type and parameters")};
   };
 
   //!@{
@@ -75,8 +77,9 @@ phot::OpticalPropagation::OpticalPropagation(Parameters const& config) : EDProdu
 {
   using IOP = phot::IOpticalPropagation;
 
+  auto const& ps = config().OpticalPropagationTool.get<fhicl::ParameterSet>();
   fOpticalPropagationTool =
-    std::unique_ptr<IOP>(art::make_tool<IOP>(config().OpticalPropagationTools()));
+    std::unique_ptr<phot::IOpticalPropagation>(art::make_tool<phot::IOpticalPropagation>(ps));
 
   fOpticalPropagationTool->InitializeTools(
     art::ServiceHandle<rndm::NuRandomService>()->registerAndSeedEngine(
