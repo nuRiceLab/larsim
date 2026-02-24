@@ -2,6 +2,7 @@
 // Job execution file for the OpticalPropagation module
 //---------------------------------------------------------------------------//
 #include "OpticalPropPDFastSimPAR_tool.fcl"
+#include "LarCelerStandalone_tool.fcl"
 
 process_name: OpticalPropagationProducer
 
@@ -21,7 +22,9 @@ physics:
     {
         OpticalPropagation:
         {
-            OpticalPropagationTool: @local::OpticalPropPDFastSimPAR
+            OpticalPropagationTool: @local::LarCelerStandalone
         }
     }
+
+    end_path: [ OpticalPropagation ]
 }
