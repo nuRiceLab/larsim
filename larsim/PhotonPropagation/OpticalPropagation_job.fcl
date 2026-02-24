@@ -1,0 +1,25 @@
+//---------------------------------------------------------------------------//
+// Job execution file for the OpticalPropagation module
+//---------------------------------------------------------------------------//
+#include "OpticalPropPDFastSimPAR_tool.fcl"
+
+process_name: opticalpropagation
+
+services:
+{
+    TimeTracker: {}
+    MemoryTracker: {}
+}
+
+physics:
+{
+    producers:
+    {
+        OpticalPropagation:
+        {
+            OpticalPropagationTool: @local::OpticalPropPDFastSimPAR
+        }
+    }
+
+    end_path: [ OpticalPropagation ]
+}
