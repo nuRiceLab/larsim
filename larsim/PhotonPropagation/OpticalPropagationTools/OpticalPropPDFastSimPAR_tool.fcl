@@ -27,9 +27,9 @@ OpticalPropPDFastSimPAR:
     VUVTiming:               @local::common_vuv_timing_parameterization
 
     // Required detector-specific parameters:
-    VISTiming:
-    VUVHits:
-    VISHits:
+    // VISTiming:
+    // VUVHits:
+    // VISHits:
 }
 
 END_PROLOG

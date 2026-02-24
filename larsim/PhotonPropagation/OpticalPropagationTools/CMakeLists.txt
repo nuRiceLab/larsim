@@ -1,10 +1,10 @@
-cet_make_library(LIBRARY_NAME OpticalPropagationTools INTERFACE
+cet_make_library(LIBRARY_NAME OpticalPropagationTool INTERFACE
   SOURCE IOpticalPropagation.h
   LIBRARIES INTERFACE
   lardataobj::Simulation
 )
 
-cet_write_plugin_builder(phot::OpticalPropagationTools art::tool Modules
+cet_write_plugin_builder(phot::OpticalPropagationTool art::tool Modules
   INSTALL_BUILDER
   LIBRARIES CONDITIONAL
   lardataobj::Simulation
@@ -13,9 +13,9 @@ cet_write_plugin_builder(phot::OpticalPropagationTools art::tool Modules
   nurandom::RandomUtils_NuRandomService_service
 )
 
-include(phot::OpticalPropagationTools)
+include(phot::OpticalPropagationTool)
 
-cet_build_plugin(OpticalPropPDFastSimPAR phot::OpticalPropagationTools
+cet_build_plugin(OpticalPropPDFastSimPAR phot::OpticalPropagationTool
   IMPL_SOURCE OpticalPropPDFastSimPAR.cc
   LIBRARIES PRIVATE
   larsim::PhotonPropagation
