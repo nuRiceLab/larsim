@@ -97,6 +97,8 @@ phot::OpticalPropagation::OpticalPropagation(Parameters const& config) : EDProdu
                                 "SeedScintTime"));
 
 
+produces<std::vector<sim::OpDetBacktrackerRecord>>();
+
 
    }
 
@@ -119,6 +121,7 @@ void phot::OpticalPropagation::beginJob()
  */
 void phot::OpticalPropagation::produce(art::Event& event)
 {
+  std::cout << "EventID : " << event.event() << std::endl;
   art::Handle<std::vector<sim::SimEnergyDeposit>> edepHandle;
   if (!event.getByLabel("IonAndScint", edepHandle)) {
     mf::LogError("OpticalPropagation") << "Missing IonAndScint label in art::Event";
