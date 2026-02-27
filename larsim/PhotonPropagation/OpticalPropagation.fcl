@@ -3,25 +3,12 @@
 //---------------------------------------------------------------------------//
 #include "OpticalPropPDFastSimPAR_tool.fcl"
 
-process_name: OpticalPropagationProducer
+BEGIN_PROLOG
 
-services:
+OpticalPropagation:
 {
-    TimeTracker: {}
-    MemoryTracker: {}
+    module_type : OpticalPropagation
+    OpticalPropagationTool: @local::OpticalPropPDFastSimPAR
 }
 
-// Available tools are
-// @local::OpticalPropPDFastSimPAR : Semi-analytical model
-// @local::Celeritas               : Optical photon propagation on CPU and GPU
-// @local::Opticks                 : Optical photon propagation on Nvidia GPUs
-physics:
-{
-    producers:
-    {
-        OpticalPropagation:
-        {
-            OpticalPropagationTool: @local::OpticalPropPDFastSimPAR
-        }
-    }
-}
+END_PROLOG
